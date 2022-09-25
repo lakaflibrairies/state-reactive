@@ -1,6 +1,6 @@
 {
   "name": "@van_lakaf/state-reactive",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This is small library for managing state in JS application.",
   "main": "./index.js",
   "scripts": {
