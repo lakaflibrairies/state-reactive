@@ -47,6 +47,8 @@ const store = new Store({
   },
 });
 
+store.
+
 test("Reactive test", () => {
   const reactiveUser = new Reactive(user);
   let currentUser = null;
