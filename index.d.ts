@@ -37,7 +37,7 @@ type AddActionListener<T> = {
     cb: EventAction<T>,
     options?: { once: boolean }
   ): {
-    addActionListener: AddActionListener;
+    addActionListener: AddActionListener<T>;
   };
 };
 

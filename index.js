@@ -13,7 +13,7 @@ function Reactive(initialValue) {
 
   Object.defineProperty(this, "state", {
     get() {
-      return s;
+      return clone(s);
     },
     set(value) {
       console.log("Cannot set state. Instead, use setState method.");
@@ -36,7 +36,7 @@ function Reactive(initialValue) {
       callHandler: () =>
         !cb || !registeredActions["_" + key]
           ? () => {}
-          : registeredActions["_" + key](s),
+          : registeredActions["_" + key](clone(s)),
     };
   };
 
@@ -45,7 +45,7 @@ function Reactive(initialValue) {
       for (const key in registeredActions) {
         if (Object.prototype.hasOwnProperty.call(registeredActions, key)) {
           if (typeof registeredActions[key] === "function") {
-            registeredActions[key](s);
+            registeredActions[key](clone(s));
           }
         }
       }
@@ -53,7 +53,7 @@ function Reactive(initialValue) {
   };
 
   this.setState = function (value) {
-    s = value;
+    s = clone({ ...s, ...value });
     runListeners();
   };
 
@@ -106,7 +106,7 @@ function Store(config) {
         // console.log(`Action listener ${key} not found or null.`);
         return;
       }
-      listeners[key]({ state: clone(s.state) });
+      listeners[key]({ state: s.state });
     });
   };
 
@@ -124,7 +124,7 @@ function Store(config) {
     if (!actions[actionName]) {
       throw Error("Cannot dispatch action " + actionName);
     }
-    const p = actions[actionName]({ commit, state: clone(s.state) }, payload);
+    const p = actions[actionName]({ commit, state: s.state }, payload);
     runActionListeners(actionName);
     return p;
   };
