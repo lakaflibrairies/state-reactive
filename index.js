@@ -66,11 +66,20 @@ function Reactive(initialValue) {
 function Store(config) {
   let s = new Reactive(config.state);
   let mutations = config.mutations;
+  let emptyActions = [];
   let actions = config.actions;
   let actionListeners = {};
 
   for (let key in actions) {
     actionListeners[key] = {};
+  }
+  if (Array.isArray(config.empty)) {
+    for (const ea of config.empty) {
+      if (typeof ea === "string") {
+        emptyActions.push(ea);
+        actionListeners[ea] = {};
+      }
+    }
   }
 
   Object.defineProperty(this, "state", {
@@ -121,6 +130,10 @@ function Store(config) {
   };
 
   this.dispatch = function (actionName, payload) {
+    if (emptyActions.includes(actionName)) {
+      runActionListeners(actionName);
+      return Promise.resolve();
+    }
     if (!actions[actionName]) {
       throw Error("Cannot dispatch action " + actionName);
     }

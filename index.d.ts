@@ -24,6 +24,7 @@ interface InitialConfig<T> {
   state: T;
   mutations: Mutations<T>;
   actions: Actions<T>;
+  empty: string[];
 }
 
 interface ReactiveUnregistration {
@@ -61,6 +62,7 @@ export declare class Store<T> {
   private s: Reactive<T>;
   private mutations: Mutations<T>;
   private actions: Actions<T>;
+  private emptyActions: string[];
   private actionListeners: ActionListeners<T>;
 
   constructor(config: InitialConfig<T>);

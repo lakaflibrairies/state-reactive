@@ -45,9 +45,12 @@ const store = new Store({
       });
     },
   },
+  empty: [
+    "first-name-updated",
+    "last-name-updated",
+    "friend-counter-updated",
+  ]
 });
-
-store.
 
 test("Reactive test", () => {
   const reactiveUser = new Reactive(user);
@@ -88,8 +91,14 @@ test("Reactive test", () => {
 });
 
 test("Store test", () => {
+  const emptyIsTriggered = {
+    "first-name-action": false,
+    "last-name-action": false,
+    "friend-counter-action": false,
+  }
   store
     .addActionListener("setFirstName", ({ state }) => {
+      emptyIsTriggered["first-name-action"] = true;
       expect(store.snapshot.firstName).not.toStrictEqual(user.firstName);
       expect(store.state.state).not.toStrictEqual(user.firstName);
       expect(state).not.toStrictEqual(user.firstName);
@@ -104,6 +113,9 @@ test("Store test", () => {
       console.log("increaseFriendCounter: Tests ran");
     }, {
       once: true, // Adding this option if we want to listen once to this action.
+    })
+    .addActionListener("first-name-updated", () => {
+      expect(emptyIsTriggered["first-name-action"]).toStrictEqual(true);
     });
 
   // Here, we dispatch action to run tests.
