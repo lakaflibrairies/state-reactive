@@ -7,6 +7,30 @@ const user = {
   username: "username",
   userId: "userId",
   friendCounter: 0,
+  roles: {
+    admin: null,
+    editor: {
+      post: true,
+      comment: true,
+      update: {
+        post: true,
+        selfComment: true,
+        comment: false,
+        avatarPage: false,
+        pageInfos: {
+          title: false,
+          pageTag: false,
+          description: true,
+          website: false,
+          contact: {
+            email: false,
+            phoneNumber: true,
+            location: false
+          }
+        }
+      }
+    }
+  }
 };
 
 const store = new Store({
@@ -84,6 +108,8 @@ test("Reactive test", () => {
   reactiveUser.resetState();
 
   expect(currentUser).toStrictEqual(user);
+
+  expect(reactiveUser.reachValueOf("roles.editor.update.pageInfos.contact.email")).toStrictEqual(false);
 
   // Nothing will happens here, because we have unregister on the state updates.
   // Then, all tests implemented in this registration will not be ran.

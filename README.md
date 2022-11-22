@@ -111,6 +111,28 @@ Or, you can use to ``resetState`` method provided.
 
     reactiveEl.resetState();
 
+#### 8 - Reach value of specific key
+This method is used to reach the value of specific point in state tree based on the key parameter.
+
+*``note``* : If the key parameter points on unreachable value, then an error will be triggered or undefined will be returned instead.
+
+    const initialValue = {
+      foo: "bar", 
+      toto: "tata", 
+      big: {
+        foo: "sub-bar",
+        sub: {
+          titi: 421,
+          town: "Douala"
+        }
+      }
+    };
+    const reactiveEl = new Reactive(initialValue);
+
+    console.log(reactiveEl.reachValueOf("big.sub.town"));
+    // Log in console
+    // Douala
+
 ### Store
 Creating a store object using Store class.
 
@@ -119,10 +141,10 @@ Creating a store object using Store class.
 #### ``config``
 ``config`` value is a JSON that contains configuration of your store. ``config`` must contain exactly 3 properties and 1 optional.
 
-    ``state`` : must be a JSON like the initial value in the Reactive object.
-    ``mutations`` : must be a JSON which contains functions as properties. Each function must have two parameters. The first current state provided and the second (optional) is value to use to update state. Mutation must ever return the new state to update.
-    ``actions`` : must be a JSON which contains functions as properties. Each function must have two parameters. The first ``context`` provided and the second (optional) is value to use to update state, using ``commit``. Action must ever return a Promise.
-    ``empty`` (optional) : must be an array of string that represents a list of actions that can be dispatched without payload and not required any configuration in actions and mutations blocs.
+- ``state`` : must be a JSON like the initial value in the Reactive object.
+- ``mutations`` : must be a JSON which contains functions as properties. Each function must have two parameters. The first current state provided and the second (optional) is value to use to update state. Mutation must ever return the new state to update.
+- ``actions`` : must be a JSON which contains functions as properties. Each function must have two parameters. The first ``context`` provided and the second (optional) is value to use to update state, using ``commit``. Action must ever return a Promise.
+- ``empty`` (optional) : must be an array of string that represents a list of actions that can be dispatched without payload and not required any configuration in actions and mutations blocs.
 
 *``Note``* : ``context`` is an object provided in all action function, which contains to properties : ``commit`` and ``state``.
 *``Note``* : ``commit`` is a way to call mutation for update state. ``commit`` takes two parameters (one is optional). First is mutation name and second id payload that mutation will used to update state.
