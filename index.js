@@ -61,6 +61,25 @@ function Reactive(initialValue) {
     s = clone(initialValue);
     runListeners();
   };
+
+  this.reachValueOf = function(key) {
+    if (typeof key !== "string" || key.length === 0) {
+      throw new Error("parameter key must be a not empty string.");
+    }
+  
+    try {
+      return key.split(".").reduce((acc, curr, currentIndex) => {
+        if (currentIndex === 0) {
+          return s[curr];
+        }
+        return acc[curr];
+      }, null);
+    } catch (error) {
+      throw new Error(
+        "Can not read property " + key + " in state."
+      );
+    }
+  }
 }
 
 function Store(config) {
