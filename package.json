@@ -1,8 +1,7 @@
 {
   "name": "@lakaflibrairies/state-reactive",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "This is small library for managing state in JS application.",
-  "main": "./index.js",
   "scripts": {
     "test": "jest"
   },
@@ -10,8 +9,15 @@
     "type": "git",
     "url": "git+https://github.com/lakaflibrairies/state-reactive.git"
   },
-  "keywords": [],
-  "author": "Vaneck KAFFO",
+  "keywords": [
+    "lakaflibrairies",
+    "js",
+    "state-management",
+    "reactive",
+    "web",
+    "rest"
+  ],
+  "author": "Vaneck KAFFO(LaKaf Librairies)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/lakaflibrairies/state-reactive/issues"

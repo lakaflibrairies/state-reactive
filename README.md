@@ -4,7 +4,7 @@ A small library for managing state and reactive elements in JS application using
 
 ## Getting started
 ### Installation
-`npm i -S state-reactive` or `npm install -save state-reactive`
+`npm i -S @lakaflibrairies/state-reactive`
 
 ### Demo
 **Here is sample code showing to use state-reactive.**
@@ -147,11 +147,13 @@ Creating a store object using Store class.
 - ``empty`` (optional) : must be an array of string that represents a list of actions that can be dispatched without payload and not required any configuration in actions and mutations blocs.
 
 *``Note``* : ``context`` is an object provided in all action function, which contains to properties : ``commit`` and ``state``.
-*``Note``* : ``commit`` is a way to call mutation for update state. ``commit`` takes two parameters (one is optional). First is mutation name and second id payload that mutation will used to update state.
-*``Note``* : ``commit.state`` contains the previous version of state before commit new state.
+
+*``Note``* : ``commit`` is a way to call mutation for update state. ``commit`` takes two parameters (one is optional). The first is mutation name and the second is the payload that mutation will used to update state.
+
+*``Note``* : ``context.state`` contains the previous version of state before commit new state.
 
 #### ``state``
-Go to ***Reactive*** section for more informations.
+Go to [***Reactive***](#reactive) section for more informations.
 
 #### ``snapshot``
 ``store.snapshot`` represents the value of your state at a specific time.
@@ -162,14 +164,18 @@ Somewhere in your code, you can add action listener like this.
     // addActionListener takes 3 parameters (the last is optional).
     store.addActionListener(...);
     // The first is the action name
-    // The second is the callback to provide when action will be dispatched. This callback may have one object as parameter, which contains one property (``state``) that represents the value of the state after action being ran.
-    // The last (optional) is the configuration (JSON object) of your listener which contains one property (once equals to false by default) that specify if listener will be called one time only.
+    // The second is the callback to provide when action will be dispatched. This callback may have one object in parameter, which contains one property (``state``) that represents the value of the state after action being ran.
+    // The last (optional) is the configuration (JSON object) of your listener which contains one property named "once" (false by default) that specify if listener will be called one time only.
 
-This is sample code of addActionListener
+This is sample code of addActionListener method
 
-    store.addActionListener("setFirstName", ({ state }) => {
-        // your code here...
-    }, { once: true });
+    store
+      .addActionListener("setFirstName", ({ state }) => {
+            // your code here...
+        }, { once: true })
+      .addActionListener("action-name", ({ state }) => {
+            // code here
+        });
 
 #### ``dispatch``
 dispatch method is a way you can update the state of your store anywhere in your code. Executing dispatch triggers the execution of all action listeners associated with the dispatched action. dispatch ever returns a Promise and takes two parameters depending on the implementation of the associated action.
