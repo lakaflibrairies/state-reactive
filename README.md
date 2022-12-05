@@ -1,4 +1,5 @@
-# State-reactive
+# State reactive 
+***@version 1.2.0***, By LaKaf Librairies.
 
 A small library for managing state and reactive elements in JS application using registrations and action listeners.
 
@@ -192,4 +193,20 @@ This is sample code of dispatch
     });
 
 You can listen empty action by dispatching it without payload.
+
+#### ``emit``
+This method is used to trigger an action at a specific moment by providing a payload.
+
+    store.emit("action-name", { foo: "bar" });
+
+#### ``listenAction``
+This method is used to listen to an emitted action. It means that the provided callback cb will not be registered in the store actions and be executed when action will be called.
+
+    store
+      .listenAction("action-name", (payload) => {
+        // code here...
+      })
+      .ilstenAction("new-action", (payload) => {
+        // code here...
+      });
 

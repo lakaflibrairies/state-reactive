@@ -149,3 +149,11 @@ test("Store test", () => {
   store.dispatch("setLastName", "JEST TESTER");
   store.dispatch("increaseFriendCounter");
 });
+
+test("Event action test", () => {
+  store.emit("action-test", { foo: "bar" });
+
+  store.listenAction("action-test", (payload) => {
+    expect(payload.foo).toStrictEqual("bar");
+  });
+});

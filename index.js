@@ -35,7 +35,7 @@ function Reactive(initialValue) {
       },
       callHandler: () =>
         !cb || !registeredActions["_" + key]
-          ? () => {}
+          ? () => { }
           : registeredActions["_" + key](clone(s)),
     };
   };
@@ -62,11 +62,11 @@ function Reactive(initialValue) {
     runListeners();
   };
 
-  this.reachValueOf = function(key) {
+  this.reachValueOf = function (key) {
     if (typeof key !== "string" || key.length === 0) {
       throw new Error("parameter key must be a not empty string.");
     }
-  
+
     try {
       return key.split(".").reduce((acc, curr, currentIndex) => {
         if (currentIndex === 0) {
@@ -88,6 +88,8 @@ function Store(config) {
   let emptyActions = [];
   let actions = config.actions;
   let actionListeners = {};
+  let eventNames = new Reactive({});
+  let emitted = new Reactive({ value: null });
 
   for (let key in actions) {
     actionListeners[key] = {};
@@ -103,7 +105,7 @@ function Store(config) {
 
   Object.defineProperty(this, "state", {
     get() {
-      return s;
+      return clone(s);
     },
     set(value) {
       console.log(
@@ -175,9 +177,32 @@ function Store(config) {
         actionListeners[actionName]["_" + keysLength] = null;
       }
     };
-    
+
     return { addActionListener: this.addActionListener };
   };
+
+  this.emit = function (eventName, payload) {
+    if (typeof eventName !== 'string' || eventName.length === 0) {
+      return;
+    }
+    const newVal = {};
+    newVal[eventName] = payload || null;
+    eventNames.setState(newVal);
+    emitted.setState({ value: eventName });
+  }
+
+  this.listenAction = function (eventName, cb) {
+    if (typeof cb !== "function" && (typeof eventName !== "string" || eventName.length === 0)) {
+      throw new Error("cb must be a function and eventName must be a not empty string.");
+    }
+    emitted.register((s) => {
+      if (s.value === eventName) {
+        cb(eventNames.state[eventName]);
+      }
+      return;
+    });
+    return { listenAction: this.listenAction };
+  }
 }
 
 exports.Reactive = Reactive;
