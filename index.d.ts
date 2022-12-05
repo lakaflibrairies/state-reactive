@@ -1,4 +1,4 @@
-type Actions<T> = {
+export type Actions<T> = {
   [action: string]: (
     context: {
       commit: (commitName: string, commitPayload?: any) => void;
@@ -8,19 +8,19 @@ type Actions<T> = {
   ) => Promise<any | void>;
 };
 
-type EventAction<T> = { (event: { state?: T }): void };
+export type EventAction<T> = { (event: { state?: T }): void };
 
-type ActionListeners<T> = {
+export type ActionListeners<T> = {
   [key: keyof Actions<T>]: {
     [member: string]: EventAction<T>;
   };
 };
 
-type Mutations<T> = {
+export type Mutations<T> = {
   [mutation: string]: (state: T, payload?: any) => T;
 };
 
-interface InitialConfig<T> {
+export interface InitialConfig<T> {
   state: T;
   mutations: Mutations<T>;
   actions: Actions<T>;
@@ -45,7 +45,7 @@ interface InitialConfig<T> {
  * }
  * ```
  */
-interface ReactiveUnregistration {
+export interface ReactiveUnregistration {
   /**
    * @key unregister
    * @type {{ () => void }}
@@ -60,7 +60,7 @@ interface ReactiveUnregistration {
   callHandler: () => void;
 }
 
-type AddActionListener<T> = {
+export type AddActionListener<T> = {
   (
     actionName: keyof ActionListeners<T>,
     cb: EventAction<T>,
@@ -69,6 +69,10 @@ type AddActionListener<T> = {
     addActionListener: AddActionListener<T>;
   };
 };
+
+export type ListenAction = { (eventName: string, cb: { (payload: any): void } ): void };
+
+export type ListenActionType = { listenAction: ListenAction };
 
 export declare class Reactive<T> {
   private initialValue: T;
@@ -171,6 +175,8 @@ export declare class Store<T> {
   private actions: Actions<T>;
   private emptyActions: string[];
   private actionListeners: ActionListeners<T>;
+  private eventNames: Reactive<Record<string, any>>;
+  private emitted: Reactive<{ value: string }>;
 
   constructor(config: InitialConfig<T>);
 
@@ -216,7 +222,7 @@ export declare class Store<T> {
 
   /**
    * @method addActionListener
-   * @description 
+   * @description This method is used to register a listener of an action that will executed when action will be dispatched. It means that addActionListener allows to register a listener before it's called. 
    * @use
    * ```js
    * store.addActionListener("setFirstName", ({ state }) => {
@@ -228,4 +234,35 @@ export declare class Store<T> {
    * @param {{ once: boolean }} options - optional parameter
    */
   addActionListener: AddActionListener<T>;
+
+  /**
+   * @method emit
+   * @description This method is used to trigger an action at a specific moment by providing a payload.
+   * @use
+   * ```js
+   * store.emit("action-name", { foo: "bar" });
+   * ```
+   * @param { string } eventName
+   * @param { any } payload
+   */
+  emit(eventName, payload): void
+
+  /**
+   * @method listenAction
+   * @description This method is used to listen to an emitted action. It means that the provided callback cb will not be registered in the store actions and be executed when action will be called.
+   * @use
+   * ```js
+   * store
+   *   .listenAction("action-name", (payload) => {
+   *     // code here...
+   *   })
+   *   .ilstenAction("new-action", (payload) => {
+   *     // code here...
+   *   });
+   * ```
+   * @param { string } eventName
+   * @param { any } payload - it's the provided payload when this action was emitted.
+   * @returns { ListenActionType }
+   */
+  listenAction(eventName, cb): ListenActionType;
 }
