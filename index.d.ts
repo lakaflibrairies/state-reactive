@@ -98,6 +98,13 @@ export declare class Reactive<T> {
   get state(): T;
 
   /**
+   * @method removeNulledCallbackActions
+   * @private
+   * @description This is method is called when unregister method of registration object is called. It's useful for remove all nulled registration action.
+   */
+  private removeNulledCallbackActions(): void;
+
+  /**
    * @method register
    * @description This method is used to react on changing of state of Reactive object
    * @use
