@@ -20,6 +20,28 @@ function Reactive(initialValue) {
     },
   });
 
+  const runListeners = function () {
+    if (Object.keys(registeredActions).length !== 0) {
+      for (const key in registeredActions) {
+        if (Object.prototype.hasOwnProperty.call(registeredActions, key)) {
+          if (typeof registeredActions[key] === "function") {
+            registeredActions[key](clone(s));
+          }
+        }
+      }
+    }
+  };
+
+  const removeNulledCallbackActions = function () {
+    const keys = Object.keys(registeredActions).filter(
+      (k) => !registeredActions[k]
+    );
+
+    for (const val of keys) {
+      delete registeredActions[val];
+    }
+  };
+
   this.register = function (cb) {
     if (typeof cb !== "function") {
       throw Error("Listen callback must be a function.");
@@ -32,24 +54,14 @@ function Reactive(initialValue) {
       unregister: () => {
         registeredActions["_" + key] = null;
         cb = null;
+
+        removeNulledCallbackActions();
       },
       callHandler: () =>
         !cb || !registeredActions["_" + key]
-          ? () => { }
+          ? () => {}
           : registeredActions["_" + key](clone(s)),
     };
-  };
-
-  runListeners = function () {
-    if (Object.keys(registeredActions).length !== 0) {
-      for (const key in registeredActions) {
-        if (Object.prototype.hasOwnProperty.call(registeredActions, key)) {
-          if (typeof registeredActions[key] === "function") {
-            registeredActions[key](clone(s));
-          }
-        }
-      }
-    }
   };
 
   this.setState = function (value) {
@@ -75,11 +87,9 @@ function Reactive(initialValue) {
         return acc[curr];
       }, null);
     } catch (error) {
-      throw new Error(
-        "Can not read property " + key + " in state."
-      );
+      throw new Error("Can not read property " + key + " in state.");
     }
-  }
+  };
 }
 
 function Store(config) {
@@ -182,18 +192,23 @@ function Store(config) {
   };
 
   this.emit = function (eventName, payload) {
-    if (typeof eventName !== 'string' || eventName.length === 0) {
+    if (typeof eventName !== "string" || eventName.length === 0) {
       return;
     }
     const newVal = {};
     newVal[eventName] = payload || null;
     eventNames.setState(newVal);
     emitted.setState({ value: eventName });
-  }
+  };
 
   this.listenAction = function (eventName, cb) {
-    if (typeof cb !== "function" && (typeof eventName !== "string" || eventName.length === 0)) {
-      throw new Error("cb must be a function and eventName must be a not empty string.");
+    if (
+      typeof cb !== "function" &&
+      (typeof eventName !== "string" || eventName.length === 0)
+    ) {
+      throw new Error(
+        "cb must be a function and eventName must be a not empty string."
+      );
     }
     emitted.register((s) => {
       if (s.value === eventName) {
@@ -202,7 +217,7 @@ function Store(config) {
       return;
     });
     return { listenAction: this.listenAction };
-  }
+  };
 }
 
 exports.Reactive = Reactive;
