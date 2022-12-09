@@ -1,5 +1,5 @@
 # State reactive 
-***@version 1.2.0***, By LaKaf Librairies.
+***@version 1.2.2***, By LaKaf Librairies.
 
 A small library for managing state and reactive elements in JS application using registrations and action listeners.
 

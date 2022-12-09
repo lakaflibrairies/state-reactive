@@ -70,9 +70,9 @@ export type AddActionListener<T> = {
   };
 };
 
-export type ListenAction = { (eventName: string, cb: { (payload: any): void } ): void };
-
 export type ListenActionType = { listenAction: ListenAction };
+
+export type ListenAction = { (eventName: string, cb: { (payload: any): void } ): ListenActionType };
 
 export declare class Reactive<T> {
   private initialValue: T;
