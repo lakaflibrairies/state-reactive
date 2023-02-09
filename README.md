@@ -1,5 +1,5 @@
 # State reactive 
-***@version 1.2.2***, By LaKaf Librairies.
+***@version 1.3.0***, By LaKaf Librairies.
 
 A small library for managing state and reactive elements in JS application using registrations and action listeners.
 
@@ -203,10 +203,10 @@ This method is used to trigger an action at a specific moment by providing a pay
 This method is used to listen to an emitted action. It means that the provided callback cb will not be registered in the store actions and be executed when action will be called.
 
     store
-      .listenAction("action-name", (payload) => {
+      .listenAction("action-name", ({ data, unregister }) => {
         // code here...
       })
-      .ilstenAction("new-action", (payload) => {
+      .ilstenAction("new-action", (event) => {
         // code here...
       });
 
