@@ -1,3 +1,5 @@
+export type UnregisterFunction = { (): void };
+
 export type Actions<T> = {
   [action: string]: (
     context: {
@@ -243,6 +245,7 @@ export declare class Store<T> {
   addActionListener: AddActionListener<T>;
 
   /**
+   * @template T
    * @method emit
    * @description This method is used to trigger an action at a specific moment by providing a payload.
    * @use
@@ -250,9 +253,9 @@ export declare class Store<T> {
    * store.emit("action-name", { foo: "bar" });
    * ```
    * @param { string } eventName
-   * @param { any } payload
+   * @param { T } payload
    */
-  emit(eventName, payload): void
+  emit<T>(eventName: string, payload: T): void
 
   /**
    * @method listenAction
@@ -268,8 +271,11 @@ export declare class Store<T> {
    *   });
    * ```
    * @param { string } eventName
-   * @param { any } payload - it's the provided payload when this action was emitted.
+   * @param { ({ data: any, unregister: UnregisterFunction }) => void } cb - it's the used callback to implements behavior when action is listened.
    * @returns { ListenActionType }
    */
-  listenAction(eventName, cb): ListenActionType;
+  listenAction(
+    eventName: string,
+    cb: (event: { data: any, unregister: UnregisterFunction }) => void
+  ): ListenActionType;
 }

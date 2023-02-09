@@ -151,9 +151,20 @@ test("Store test", () => {
 });
 
 test("Event action test", () => {
-  store.emit("action-test", { foo: "bar" });
-
-  store.listenAction("action-test", (payload) => {
-    expect(payload.foo).toStrictEqual("bar");
+  let index = 0;
+  store.listenAction("action-test", ({ data, unregister }) => {
+    expect(data.foo).toStrictEqual("bar " + index);
+    expect(typeof unregister).toStrictEqual("function");
+    if (index === 2) {
+      unregister();
+    }
   });
+
+  const interval = setInterval(() => {
+    store.emit("action-test", { foo: "bar " + index });
+    if (index === 3) {
+      clearInterval(interval);
+    }
+    index++;
+  }, 200)
 });

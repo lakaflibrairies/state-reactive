@@ -210,9 +210,12 @@ function Store(config) {
         "cb must be a function and eventName must be a not empty string."
       );
     }
-    emitted.register((s) => {
+    const registration = emitted.register((s) => {
       if (s.value === eventName) {
-        cb(eventNames.state[eventName]);
+        cb({
+          data: eventNames.state[eventName],
+          unregister: registration.unregister,
+        });
       }
       return;
     });
