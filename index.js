@@ -1,10 +1,32 @@
 /**
+ * @param { number } length 
+ * @returns { string }
+ */
+function generateKey(length) {
+  var result = "";
+  const dictionary =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (var i = 0; i < length; i++) {
+    result += dictionary.charAt(Math.floor(Math.random() * dictionary.length));
+  }
+  return result;
+}
+
+/**
  * @template T
  * @param { T } obj
  * @returns { T }
  */
 function clone(obj) {
   return JSON.parse(JSON.stringify({ obj })).obj;
+}
+
+/**
+ * @template T
+ * @param { T } obj
+ */
+function cloneV2(obj) {
+  return structuredClone(obj);
 }
 
 function Reactive(initialValue) {
@@ -59,7 +81,7 @@ function Reactive(initialValue) {
       },
       callHandler: () =>
         !cb || !registeredActions["_" + key]
-          ? () => {}
+          ? () => { }
           : registeredActions["_" + key](clone(s)),
     };
   };
@@ -222,6 +244,136 @@ function Store(config) {
     return { listenAction: this.listenAction };
   };
 }
+
+/**
+ * @template T
+ * @typedef {{
+ *   pointerId: string;
+ *   state: T | null;
+ *   pointed: boolean;
+ *   nextId: string;
+ *   previousId: string;
+ * }} HistoryItem
+ * @param { T } baseHistory
+ */
+function StateNavigationHistory(baseHistory) {
+  /**
+   * @type { Array<HistoryItem<T>> }
+   */
+  let _history = [{
+    pointerId: generatePointerId(),
+    state: null,
+    nextId: null,
+    previousId: null,
+    pointed: true,
+  }];
+  /**
+   * @type { string }
+   */
+  let _pointedId = _history[0].pointerId;
+
+  /**
+   * @returns { number }
+   */
+  const getPointedIndex = () => {
+    if (pointed === null) {
+      return 0;
+    }
+    return _history.findIndex(historyItem => historyItem.pointerId === _pointedId);
+  }
+
+  /**
+   * @returns { string }
+   */
+  const generatePointerId = () => {
+    let id = `${generateKey(4)}-${generateKey(9)}-${generateKey(3)}-${generateKey(10)}`;
+    let idExists = _history.filter(historyItem => historyItem.pointerId === id)[0];
+    if (idExists) {
+      return generatePointerId();
+    }
+    return id;
+  };
+
+  const unpointAll = () => {
+    _history.forEach(el => {
+      el.pointed = false;
+    })
+  }
+
+  /**
+   * @param { number } length 
+   */
+  const goTo = (length) => {
+    if (!Number.isInteger(length)) {
+      throw new Error('Paramater length must be a non null integer.');
+    }
+    if (length === 0) {
+      return;
+    }
+    const result = getPointedIndex() + length;
+
+    unpointAll();
+    if (result < 0) {
+      _history[0].pointed = true;
+    }
+    if (result >= _history.length) {
+      _history[_history.length - 1].pointed = true;
+    }
+    _history[result].pointed = true;
+
+    return clone(_history[result]);
+  };
+
+  Object.defineProperty(this, 'length', {
+    get: () => _history.length,
+    set: () => {
+      throw new Error("Cannot set property length of StateNavigationHistory.");
+    }
+  });
+
+  /**
+   * @param { T } state
+   * @returns { HistoryItem<T> }
+   */
+  const push = (state) => {
+    const previousIndex = _history.length - 1;
+    const pointerId = generatePointerId();
+
+    if (previousIndex !== -1) {
+      _history[previousIndex].nextId = pointerId;
+    }
+
+    const newState = {
+      nextId: null,
+      pointerId,
+      state,
+      previousId: _history[previousIndex].pointerId,
+      pointed: true
+    };
+
+    unpointAll();
+    _history.push(newState);
+
+    return newState;
+  };
+
+  // Experimental feature
+  const revertPush = () => {};
+
+  const reset = () => {
+    _history = [];
+    push(baseHistory);
+  }
+
+  /**
+   * @returns { (T | null)[] }
+   */
+  const getHistory = () => {
+    return clone(_history.map(el => el.state));
+  }
+}
+
+function StateNavigator() { }
 
 exports.Reactive = Reactive;
 exports.Store = Store;
